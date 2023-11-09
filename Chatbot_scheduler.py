@@ -14,6 +14,8 @@ class Scheduler:
     def __init__(self):
         self.shared_data = {}  # Shared data store
         self.inp_status = [0] # status of current input, if input ==0 means no user input and converse for input ==1
+        self.voice_status = [0] #check if user has choosed the voice chat button
+        self.userinput=" "
 
 
     TICK = 100
@@ -53,9 +55,3 @@ class Scheduler:
 
     def SCH_GenerateID(self):
         return -1
-
-
-
-
-
-
