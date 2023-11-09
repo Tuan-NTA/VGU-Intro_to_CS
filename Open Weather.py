@@ -2,7 +2,7 @@ import datetime as dt
 import requests
 
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather?"
-API_KEY = "2980ea1f52b84656a555afc29e553b8d"
+API_KEY = "Your_Api_Key"
 CITY = input("Enter city name: ")
 
 def kelvin_to_celsius_fahrenheit(kelvin):
@@ -22,8 +22,8 @@ description = response['weather'][0]['description']
 sunrise_time = dt.datetime.utcfromtimestamp(response['sys']['sunrise'] + response['timezone'])
 sunset_time = dt.datetime.utcfromtimestamp(response['sys']['sunset'] + response['timezone'])
 
-print(f"temperature in {CITY}: {temp_celsius:.2f}°C or {temp_fahrenheit:.2f}°F")
-print(f"temperature in {CITY} feels like: {feels_like_celsius:.2f}°C or { feels_like_fahrenheit:.2f}°F")
+print(f"Temperature in {CITY}: {temp_celsius:.2f}°C or {temp_fahrenheit:.2f}°F")
+print(f"emperature in {CITY} feels like: {feels_like_celsius:.2f}°C or { feels_like_fahrenheit:.2f}°F")
 print(f"Humidity in {CITY}: {humidity}%")
 print(f"Wind speed in {CITY}: {wind_speed}m/s")
 print(f"General weather in {CITY}: {description}")
