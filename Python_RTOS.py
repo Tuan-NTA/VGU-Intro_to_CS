@@ -5,6 +5,7 @@ from Chatbot_scheduler import *
 
 from task2 import *
 from task1 import *
+from Voice_GUI import *
 import threading
 
 # Global flag variable to signal thread termination
@@ -28,9 +29,11 @@ if __name__ == "__main__":
 
     task2 = Task2(scheduler,chatbot_app)
     task1 = Task1(scheduler)
+    speechrec=Voice_GUI(scheduler,chatbot_app)
 
     scheduler.SCH_Add_Task(task2.Task2_Run, 3000, 6000)
     scheduler.SCH_Add_Task(task1.Task1_Run, 3000, 12000)
+    scheduler.SCH_Add_Task(speechrec.Voice_GUI_run,3000,1000)
     
     scheduler_thread = threading.Thread(target=run_scheduler, args=(scheduler,))
     scheduler_thread.daemon = True
@@ -44,3 +47,4 @@ def close_app():
     global exit_threads
     exit_threads = True
     root.quit()
+    scheduler_thread.join()  # Wait for the scheduler thread to finish
