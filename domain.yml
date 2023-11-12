@@ -1,0 +1,132 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - turn_on_light
+  - turn_off_light
+  - add_event
+  - get_event
+  - query_knowledge_base
+  - inform_weather
+
+entities:
+  - number
+  - time
+  - event
+  - object_type
+  - mention
+  - attribute
+  - hotel
+  - restaurant
+  - cuisine
+  - city
+
+slots:
+  #calender
+  event:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: event
+      intent: add_event
+
+  time:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: time
+      intent: add_event
+
+  #knowledge-base
+  object_type:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: object_type
+  mention:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: mention
+  attribute:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: attribute
+  hotel:
+    type: text
+    influence_conversation: false
+    mappings:
+     - type: from_entity
+       entity: hotel
+  restaurant:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: restaurant
+  city:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: city
+  cuisine:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: cuisine
+
+forms:
+  event_form:
+    required_slots:
+    - event
+    - time
+
+
+responses:
+  utter_greet:
+  - text: "Hi. How may I help you?"
+
+  utter_cheer_up:
+  - text: "Here is something to cheer you up:"
+
+  utter_did_that_help:
+  - text: "Did that help you?"
+
+  utter_happy:
+  - text: "Great, carry on!"
+
+  utter_goodbye:
+  - text: "Bye"
+
+  utter_iamabot:
+  - text: "I am your virtual assistant."
+
+  utter_ask_rephrase:
+  - text: "Sorry, I'm not sure I understand. Can you rephrase?"
+  - text: "Can you please rephrase? I did not got that."
+
+
+actions:
+  - action_add_event
+  - action_get_event
+  - action_query_knowledge_base
+  - action_inform_weather
+  - action_toggle_light
+
+
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
