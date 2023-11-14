@@ -1,6 +1,9 @@
+from sched import scheduler
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
+
+from Voice_GUI import Voice_GUI
 
 class ChatbotApp:
     def __init__(self, root, scheduler):
@@ -15,8 +18,8 @@ class ChatbotApp:
         self.create_widgets()
         self.load_chatFrame()
         self.Boxchat
-
         self.scheduler = scheduler #get direct attributes from scheduler
+        self.voicechat()
 
     def load_images(self):
         try:
@@ -55,6 +58,16 @@ class ChatbotApp:
         self.Chatscreen.config(state=tk.DISABLED)
         self.Boxchat.delete(1.0, tk.END)
         self.submit_button.config(state=tk.DISABLED)
+        self.scheduler.userinput=text
+
+    def Insert_response(self,text):
+        self.Chatscreen.config(state=tk.NORMAL)
+        self.Chatscreen.insert(tk.END, "\n----------------------------------\n\n" + "AI:   " + text + "\n\n----------------------------------\n")
+        self.Chatscreen.config(state=tk.DISABLED)
+
+    def voicechat(self):
+        self.scheduler.voice_status[0]=abs(self.scheduler.voice_status[0]-1)
+        voiceGUI=Voice_GUI(scheduler,ChatbotApp)
 
     def load_chatFrame(self):
         chatFrame = tk.Frame(self.window, width=900, height=100, bg='#002d51')
@@ -68,6 +81,10 @@ class ChatbotApp:
         self.submit_button = tk.Button(chatFrame, text="Submit", padx=18, pady=12, font=("Helvetica Bold", 12),
                                   bg="green", fg="white", border=0, command=self.Insert_text)
         self.submit_button.place(x=640, y=25)
+
+        self.voice_chatButton = tk.Button(chatFrame, text="Voice", padx=18, pady=12, font=("Helvetica Bold", 12),
+                                  bg="#2B7ED6", fg="white", border=0,command=self.voicechat)
+        self.voice_chatButton.place(x=50, y=25)
 
 
 
