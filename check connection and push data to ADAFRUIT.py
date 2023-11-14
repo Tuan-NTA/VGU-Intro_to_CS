@@ -18,10 +18,6 @@ class Cargo:
             self.cargo = float(self.cargo)
         client.publish(self.where, self.cargo) #uploads data to adafruit to the feed specified
 
-
-
-
-
 def connected(client):
     print("Server connected ...") #connect to certain switches if you want
     client.subscribe("led")
