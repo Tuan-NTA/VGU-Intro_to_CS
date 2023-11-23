@@ -5,16 +5,15 @@
 # https://rasa.com/docs/rasa/custom-actions
 
 
-# This is a simple example for a custom action which utters "Hello World!"
-from __future__ import print_function
 
+
+import requests
 from rasa_sdk.events import AllSlotsReset
 from typing import Any, Text, Dict, List
 
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
-from rasa_sdk.knowledge_base.storage import InMemoryKnowledgeBase
-from rasa_sdk.knowledge_base.actions import ActionQueryKnowledgeBase
+from rasa_sdk.events import UserUtteranceReverted
 
 import datetime
 from datetime import datetime, timedelta
@@ -27,6 +26,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import pickle
 
+from Adafruit_IO import Client, Data
 
 
 class ActionToggleLight(Action):
@@ -38,8 +38,8 @@ class ActionToggleLight(Action):
         ) -> List[Dict[Text, Any]]:
         # Your Adafruit IO credentials
 
-        adafruit_io_username = "your_username"
-        adafruit_io_key = "your_key"
+        adafruit_io_username = "TuanNT"
+        adafruit_io_key = "aio_LQyI05jz2q7FL2deW8SqKItJVLN2"
 
         # Get the intent and extract relevant information from the tracker
         intent = tracker.latest_message['intent'].get('name')
@@ -47,7 +47,7 @@ class ActionToggleLight(Action):
         # Adjust the following logic based on your specific Rasa intents
         if intent == 'turn_on_light':
             # Make a request to turn on the button on Adafruit server
-            url = f"https://io.adafruit.com/api/v2/{adafruit_io_username}/feeds/your_button_feed/data"
+            url = f"https://io.adafruit.com/api/v2/{adafruit_io_username}/feeds/button1/data"
             headers = {"X-AIO-Key": adafruit_io_key}
             data = {"value": "1"}
             response = requests.post(url, json=data, headers=headers)
@@ -59,7 +59,7 @@ class ActionToggleLight(Action):
 
         elif intent == 'turn_off_light':
             # Make a request to turn off the button on Adafruit server
-            url = f"https://io.adafruit.com/api/v2/{adafruit_io_username}/feeds/your_button_feed/data"
+            url = f"https://io.adafruit.com/api/v2/{adafruit_io_username}/feeds/button1/data"
             headers = {"X-AIO-Key": adafruit_io_key}
             data = {"value": "0"}
             response = requests.post(url, json=data, headers=headers)
@@ -82,7 +82,8 @@ class AddEventToCalendar(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         event_name = tracker.get_slot('event')
         time = tracker.get_slot('time')
-        new_time = datetime.strptime(time, '%d/%m/%y %H:%M:%S')
+
+        new_time = datetime.strptime(time, '%d/%m/%y %H:%M:%S') - timedelta(days=1) + timedelta(hours=10)
 
         add_event(event_name, new_time)
 
@@ -139,18 +140,13 @@ def get_calendar_service():
 
 
 def add_event(event_name, time):
-    # creates one hour event tomorrow 10 AM IST
     service = get_calendar_service()
-
-    #    d = datetime.now().date()
-    #    tomorrow = datetime(d.year, d.month, d.day, 10)+timedelta(days=1)
-    #    start = tomorrow.isoformat()
     end = (time + timedelta(hours=1)).isoformat()
 
-    event_result = service.events().insert(calendarId='primary',
+    event_result = service.events().insert(calendarId='a9caf84e59ea870a6b8c2db10dbb850593b86dfd11ce90c06073e8acc4ebbced@group.calendar.google.com',
                                            body={
                                                "summary": event_name,
-                                               "description": 'This is a tutorial example of automating google calendar with python',
+                                               "description": 'Reminder',
                                                "start": {"dateTime": time.isoformat(), "timeZone": 'Etc/GMT+7'},
                                                "end": {"dateTime": end, "timeZone": 'Etc/GMT+7'},
                                            }
@@ -177,7 +173,7 @@ def get_event():
 def do_event():
     service = get_calendar_service()
     now = datetime.utcnow().isoformat() + 'Z'
-    events = service.events().list(calendarId='primary', timeMin=now,
+    events = service.events().list(calendarId='a9caf84e59ea870a6b8c2db10dbb850593b86dfd11ce90c06073e8acc4ebbced@group.calendar.google.com', timeMin=now,
                                    maxResults=10, singleEvents=True,
                                    orderBy='startTime').execute().get("items", [])
 
@@ -203,61 +199,84 @@ class ActionDoEvent(Action):
         return []
 
 
-class ActionMyKB(ActionQueryKnowledgeBase):
-    def __init__(self):
-        # load knowledge base with data from the given file
-        knowledge_base = InMemoryKnowledgeBase("knowledge_base_data.json")
+class ActionDefaultFallback(Action):
+    def name(self) -> Text:
+        return "action_default_fallback"
 
-        # overwrite the representation function of the hotel object
-        # by default the representation function is just the name of the object
-        knowledge_base.set_representation_function_of_object(
-            "hotel", lambda obj: obj["name"] + " (" + obj["city"] + ")"
-        )
+    def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
 
-        super().__init__(knowledge_base)
+        # Get user message from Rasa tracker
+        user_message = tracker.latest_message.get('text')
+        print(user_message)
+
+        # Set up OpenAI API request
+        url = 'https://api.openai.com/v1/chat/completions'
+        headers = {
+            'Authorization': 'Bearer -',  # Replace 'your_api_key' with your actual OpenAI API key
+            'Content-Type': 'application/json'
+        }
+        data = {
+            'model': "gpt-3.5-turbo",
+            'messages': [
+                {'role': 'system', 'content': 'You are an AI assistant for the user. You help to solve user queries'},
+                {'role': 'user', 'content': 'You: ' + user_message}
+            ],
+            'max_tokens': 100
+        }
+
+        # Make the request to the OpenAI API
+        response = requests.post(url, headers=headers, json=data)
+
+        # Check for a successful response
+        if response.status_code == 200:
+            chatgpt_response = response.json()
+            # Extract the response message from OpenAI API
+            message = chatgpt_response['choices'][0]['message']['content']
+            dispatcher.utter_message(message)
+        else:
+            # Handle error
+            dispatcher.utter_message("Sorry, I couldn't generate a response at the moment. Please try again later.")
+            # Revert user message which led to fallback.
+            return [UserUtteranceReverted()]
+
+        # Return an empty list to indicate the action was executed successfully
+        return []
+
+
+
+# Define your Adafruit IO credentials
+ADAFRUIT_IO_USERNAME = "TuanNT"
+ADAFRUIT_IO_KEY = "aio_LQyI05jz2q7FL2deW8SqKItJVLN2"
 
 
 class ActionInformWeather(Action):
-    def name(self) -> Text:
+    def name(self):
         return "action_inform_weather"
 
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        # Get the necessary slots from the tracker
-        api_key = tracker.get_slot("api_key")
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain):
+        # Retrieve necessary parameters from the tracker
 
-        # Initialize an empty dictionary to store data for each feed
-        adafruit_data = {}
+        feed_names = [
+            "sensor1",
+            "sensor2",
+            "sensor3"
+        ]
 
-        for device_id in device_ids:
-            # Make a request to the Adafruit server for each feed
-            adafruit_url = f"https://io.adafruit.com/api/v2/{device_id}/feeds"
-            headers = {"X-AIO-Key": api_key}
+        # Initialize Adafruit IO client
+        aio = Client(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY)
 
+        for feed_name in feed_names:
+            # Fetch data from Adafruit IO
             try:
-                response = requests.get(adafruit_url, headers=headers)
-                data = response.json()
-
-                # Extract relevant information from the response
-                # Modify this part based on the actual structure of the Adafruit response
-                relevant_info = data["your_desired_key"]
-
-                # Store the relevant information in the dictionary
-                adafruit_data[device_id] = relevant_info
-
+                data = aio.receive(feed_name)
+                # Extract relevant information from 'data' and send it to the user
+                dispatcher.utter_message(f"The value of {feed_name} is: {data.value}")
             except Exception as e:
-                # Handle errors for each feed appropriately
-                dispatcher.utter_message(
-                    f"An error occurred while fetching data from Adafruit server for {device_id}: {str(e)}")
+                dispatcher.utter_message(f"Error fetching data from {feed_name}: {str(e)}")
 
-                # Set None for the feed that encountered an error
-                adafruit_data[device_id] = None
-
-        # Send the collected information to the user
-        for device_id, info in adafruit_data.items():
-            if info is not None:
-                dispatcher.utter_message(f"The data from Adafruit server for {device_id} is: {info}")
-
-        # Set a slot with the fetched data (optional)
-        return [SlotSet("adafruit_data", adafruit_data)]
+        return []

@@ -1,32 +1,36 @@
 import requests
+import tkinter as tk
+
 
 class RasaBot:
+    def __init__(self, scheduler, chatbot_app):
+        self.chatbot_app = chatbot_app
+        self.scheduler = scheduler
+        self.rasa_url = "http://localhost:5005/webhooks/rest/webhook"
+        self.last_response = None  # Store the last response
 
-    def __init__(self, url="http://local/webhooks/rest/webhook"):
-        self.url = url
-        self.headers = {"Content-Type": "application/json"}
+    def run_chatbot(self):
+        payload = {
+            "sender": "user",
+            "message": self.scheduler.userinput
+        }
 
-    def send_message(self, message):
-        payload = {"message": message}
+        response = requests.post(self.rasa_url, json=payload)
 
-        try:
-            response = requests.post(self.url, json=payload, headers=self.headers).json()
-            # Check if the response is not empty
-            if response:
-                return response[0]['text']
-            else:
-                return "No response from the bot."
-        except Exception as e:
-            return f"Error: {str(e)}"
+        if response.status_code == 200:
+            if response.json():
+                rasa_response = response.json()[0]
+
+                # Check if the response has changed
+                if rasa_response['text'] != self.last_response:
+                    print(f"Bot: {rasa_response['text']}")
+                    self.chatbot_app.Insert_response(rasa_response['text'])
+                    self.chatbot_app.submit_button.config(state=tk.NORMAL)
+
+                    # Update the last response
+                    self.last_response = rasa_response['text']
 
 
-if __name__ == "__main__":
-    rasa_bot = RasaBot()
+        else:
+            print(f"Error: {response.status_code}, {response.text}")
 
-    while True:
-        user_input = input("You: ")
-        if user_input.lower() == 'exit':
-            break
-
-        bot_response = rasa_bot.send_message(user_input)
-        print(f"Bot: {bot_response}")

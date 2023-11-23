@@ -32,6 +32,11 @@ rules:
   - intent: get_event
   - action: action_get_event
 
+- rule: inform weather
+  steps:
+  - intent: inform_weather
+  - action: action_inform_weather
+
 - rule: Activate form
   steps:
   - intent: add_event
@@ -51,12 +56,5 @@ rules:
   # The actions we want to run when the form is submitted.
   - action: action_add_event
 
-- rule: query knowledge base
-  steps:
-    - intent: query_knowledge_base
-    - action: action_query_knowledge_base
 
-- rule: inform weather
-  steps:
-    - intent: inform_weather
-    - action: action_inform_weather
+
