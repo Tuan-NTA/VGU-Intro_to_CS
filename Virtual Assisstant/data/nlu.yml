@@ -1,0 +1,151 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - moin
+    - hey there
+    - let's go
+    - hey dude
+    - good morning
+    - good evening
+    - good afternoon
+
+- intent: goodbye
+  examples: |
+    - see you
+    - good by
+    - cee you later
+    - good night
+    - bye
+    - goodbye
+    - have a nice day
+    - see you around
+    - bye bye
+    - see you later
+
+- intent: affirm
+  examples: |
+    - yes
+    - y
+    - indeed
+    - of course
+    - that sounds good
+    - correct
+
+- intent: deny
+  examples: |
+    - no
+    - n
+    - never
+    - I don't think so
+    - don't like that
+    - no way
+    - not really
+
+- intent: mood_great
+  examples: |
+    - perfect
+    - great
+    - amazing
+    - feeling like a king
+    - wonderful
+    - I am feeling very good
+    - I am great
+    - I am amazing
+    - I am going to save the world
+    - super stoked
+    - extremely good
+    - so so perfect
+    - so good
+    - so perfect
+
+- intent: mood_unhappy
+  examples: |
+    - my day was horrible
+    - I am sad
+    - I don't feel very well
+    - I am disappointed
+    - super sad
+    - I'm so sad
+    - sad
+    - very sad
+    - unhappy
+    - not good
+    - not very good
+    - extremly sad
+    - so saad
+    - so sad
+
+- intent: bot_challenge
+  examples: |
+    - are you a bot?
+    - are you a human?
+    - am I talking to a bot?
+    - am I talking to a human?
+- intent: turn_on_light
+  examples: |
+    - turn on the light
+    - please turn on the light
+    - Can you turn on the light?
+    - Switch on the lights, please
+    - Activate the lighting in the room
+    - Turn the lights on now
+    - I want to illuminate the space, turn on the light
+    - Can you brighten up the room?
+
+- intent: turn_off_light
+  examples: |
+    - turn off the light
+    - please turn off the light
+    - Can you turn off the light?
+    - Turn off the lights before leaving
+    - Switch off the lighting, please
+    - I want to darken the room, turn off the light
+    - Deactivate the lights
+    - Please, no lights. Turn them off."
+
+
+- intent: add_event
+  examples: |
+    - add event to [dance](event) at [23/09/22 10:00:00](time)
+    - remind me to [take a bath](event) at [25/09/22 10:00:00](time)
+    - remind me to [go for jogging](event) at [25/09/22 10:00:00](time)
+    - remind me to [finish homework](event) at [25/09/22 10:00:00](time)
+    - set reminder to [water the plants](event) at [25/09/22 10:00:00](time)
+    - remind me to [send proposal](event) at [25/09/22 10:00:00](time)
+    - remind me to [finish visa work](event) at [25/09/22 10:00:00](time)
+    - Set reminder at [25/09/22 10:00:00](time)
+    - set reminder for me to [call John](event) at [25/09/22 10:00:00](time)
+    - set [reminder](event) at [25/09/22 10:00:00](time)
+
+
+- intent: get_event
+  examples: |
+    - Get Event
+    - what is on my calendar
+    - what is on my schedule 
+    - show me my calender
+    - what do i have to do at [25/09/22 10:00:00](time)
+    - is my schedule free
+    - Get schedule
+
+- intent: inform_weather
+  examples: |
+    - what's the weather like?
+    - how is the weather?
+    - is it sunny?
+    - how is the sky?"What's the weather like today?
+    - Can you tell me the forecast for tomorrow?
+    - Is it going to rain this weekend?
+    - What's the temperature outside right now?
+    - Tell me about the weather conditions in the city
+    - weather
+    
+
