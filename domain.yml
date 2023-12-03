@@ -1,0 +1,80 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - turn_on_light
+  - turn_off_light
+  - add_event
+  - get_event
+  - inform_weather
+
+
+entities:
+  - time
+  - event
+
+
+slots:
+  event:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: event
+      intent: add_event
+
+  time:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: time
+      intent: add_event
+
+
+
+forms:
+  event_form:
+    required_slots:
+    - event
+    - time
+
+
+responses:
+  utter_greet:
+  - text: "Hi. How may I help you?"
+
+  utter_cheer_up:
+  - text: "Here is something to cheer you up:"
+
+  utter_did_that_help:
+  - text: "Did that help you?"
+
+  utter_happy:
+  - text: "Great, carry on!"
+
+  utter_goodbye:
+  - text: "Bye"
+
+  utter_iamabot:
+  - text: "I am your virtual assistant."
+
+
+
+
+actions:
+  - action_add_event
+  - action_get_event
+  - action_inform_weather
+  - action_toggle_light
+  - action_default_fallback
+
+
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
