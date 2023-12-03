@@ -1,0 +1,60 @@
+version: "3.1"
+
+rules:
+
+- rule: greet
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- rule: Say goodbye anytime the user says goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: Say 'I am a bot' anytime the user challenges
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+- rule: Turn on the the light when the user asks
+  steps:
+  - intent: turn_on_light
+  - action: action_toggle_light
+
+- rule: Turn off the the light when the user asks
+  steps:
+  - intent: turn_off_light
+  - action: action_toggle_light
+
+- rule: get event
+  steps:
+  - intent: get_event
+  - action: action_get_event
+
+- rule: inform weather
+  steps:
+  - intent: inform_weather
+  - action: action_inform_weather
+
+- rule: Activate form
+  steps:
+  - intent: add_event
+  - action: event_form
+  - active_loop: event_form
+
+- rule: Submit form
+  condition:
+  # Condition that form is active.
+  - active_loop: event_form
+  steps:
+  # Form is deactivated
+  - action: event_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  # The actions we want to run when the form is submitted.
+  - action: action_add_event
+
+
+
